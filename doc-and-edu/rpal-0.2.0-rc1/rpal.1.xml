@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<?xsl-stylesheet href="http://docbook.sourceforge.net/release/xsl/1.69.1/manpages/docbook.xsl"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
+<refentry id="rpal">
+  <refmeta>
+    <refentrytitle>rpal</refentrytitle>
+    <manvolnum>1</manvolnum>
+  </refmeta>
+  
+  <refnamediv>
+    <refname>rpal</refname>
+    <refpurpose>
+An interpreter for the Right-reference Pedagogic Algorithmic Language.
+</refpurpose>
+  </refnamediv>
+  
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>rpal</command>
+      <arg choice="opt" rep="no"><option>-asrihV</option></arg>
+      <arg choice="opt" rep="no"><option>--ast</option></arg>
+      <arg choice="opt" rep="no"><option>--st</option></arg>
+      <arg choice="opt" rep="no"><option>--run</option></arg>
+      <arg choice="opt" rep="no"><option>--interactive</option></arg>
+      <arg choice="opt" rep="no"><option>--help</option></arg>
+      <arg choice="opt" rep="no"><option>--version</option></arg>
+      <arg choice="opt" rep="no">file</arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>DESCRIPTION</title>
+    <para>
+<command>rpal</command> takes an RPAL program as input and evaluates it
+by translating it into Scheme. If no file is specified on the command
+line, stdin is used.
+</para>
+    <para>
+You can see <command>rpal</command>'s intermediate output using the options
+<option>--ast</option> and <option>--st</option>, which generate the abstract
+syntax tree and the scheme tree respectively. Their short equivalents are
+<option>-a</option> and <option>-s</option>.
+</para>
+    <para>
+If one of the above is supplied, <command>rpal</command> will normally exit
+after displaying the requested tree, without evaluating the program. Use
+<option>--run</option> or <option>-r</option> to override this behavior.
+</para>
+    <para>
+<option>-i</option> or <option>--interactive</option> launches a
+read-eval-print loop. When running in interactive mode, three special commands
+are recognized. <command>ast</command> and <command>st</command> toggle output
+of the abstract syntax tree and scheme tree. <command>quit</command> exits
+the interpreter.
+</para>
+  </refsect1>
+  <refsect1>
+    <title>AUTHOR</title>
+    <para>
+Written by Daniel Franke with contributions from Manuel Bermudez.
+</para>
+  </refsect1>
+  <refsect1>
+    <title>BUGS</title>
+    <para>
+Probably infinite.  Report them to <email>dfranke@cise.ufl.edu</email>.
+</para>
+    </refsect1>
+  <refsect1>
+    <title>COPYRIGHT</title>
+    <para>
+    Copyright (C) 2006 Daniel Franke.
+</para>
+    <para>
+This is free software; see the source for copying conditions.  There is
+NO  warranty;  not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.
+</para>
+  </refsect1>
+
+  </refentry>
+  

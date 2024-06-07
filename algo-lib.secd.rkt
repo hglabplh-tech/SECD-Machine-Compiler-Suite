@@ -1,4 +1,4 @@
-((define fib
+'((define fib
   (lambda (x res)
   (cond-branch (== x 0)
                (mul res 1)
@@ -7,8 +7,5 @@
   (lambda (x)
   (cond-branch (== x 0)
                (mul x 1)
-               (add x (apply-fun chain (sub x 1))))))
-(define sqrt
-  (lambda (x)
-    (mul x x))))
+               (add x (apply-fun chain (sub x 1)))))))
 

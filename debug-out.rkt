@@ -1,5 +1,7 @@
 #lang racket
  (require  "secd-vm-defs.rkt"
+           "thread-chan-sem-defs.rkt"
+           "secd-dbg-print-it.rkt"
   "stack.rkt"
   "operations.rkt")
 
@@ -24,11 +26,11 @@
 
 (define  write-newline
   (lambda ()
-  (writeln " ")))
+  ""))
 
 (define  write-string
   (lambda (str)
-    (print str)))
+    (put str)))
 
 (define debug-snap-stack
   (lambda (op-stack   message)
@@ -42,23 +44,23 @@
     (begin
       (write-object-nl message)
       (write-newline)          
-      (print "------ Begin Actual Env --------------")
+      (put "------ Begin Actual Env --------------")
       (write-newline)
       (if (not (empty? act-env))      
           (for-each (lambda (bind)
                       (begin
                         (write-newline)
-                        (print "------ Begin Binding --------------")
+                        (put "------ Begin Binding --------------")
                         (write-newline)
-                        (print (binding-variable bind))
+                        (put (binding-variable bind))
                         (write-newline)
-                        (print (binding-value bind))
+                        (put (binding-value bind))
                         (write-newline)
-                        (print "------ End Binding --------------")
+                        (put "------ End Binding --------------")
                         (write-newline)))
                     act-env)
           (write-newline))
-      (print "------ End Actual Env --------------")
+      (put "------ End Actual Env --------------")
       (write-newline)
       )))
 
@@ -188,27 +190,19 @@
 (define write-object-nl
   (lambda (message)
     (begin
-      (write-newline)
-      (print message)
-      (write-newline)
+      (put message)
       )))
 
 (define print-stack-env-code
-  (lambda (op-stack fun-stack env code message)
+  (lambda (op-stack env code message)
     (begin
      (write-object-nl  "------------ Begin ACT OP STACK  --------------------")
       (debug-snap-stack op-stack message)
       (write-object-nl  "------------ End ACT OP STACK  --------------------")
-
-      (write-object-nl  "------------ Begin ACT FUN STACK  --------------------")
-      (debug-snap-stack fun-stack message)
-      (write-object-nl  "------------ End ACT FUN STACK  --------------------")
-      
-         (write-object-nl  "------------ Begin ACT ENV --------------------")
+      (write-object-nl  "------------ Begin ACT ENV --------------------")
       (debug-snap-env env message)
       (write-object-nl  "------------ End ACT ENV --------------------")
-
-           (write-object-nl  "------------ Begin ACT CODE --------------------")
+      (write-object-nl  "------------ Begin ACT CODE --------------------")
       (write-object-nl  code)
       (write-object-nl  "------------ End ACT CODE --------------------")
       )))

@@ -1,0 +1,5 @@
+let hello() =
+  Print 'Hello world*n';
+  0
+in
+hello()

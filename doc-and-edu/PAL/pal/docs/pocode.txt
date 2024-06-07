@@ -1,0 +1,170 @@
+This document describes the interpretive code for PAL compiled by the
+pal70 compiler. It is closely based on the anonymous handwritten
+document pocode.pdf and the Pal compile preserved by R. Mabee
+(pal70-mabee-12jun70.pdf).
+
+LoadL x
+  Load the Lvalue of name x onto the stack.
+
+LoadR x
+  Load the Rvalue of name x onto the stack.
+
+LoadS x
+  Load the Pal string representing string x onto the stack.
+
+LoadN n
+  Load the integer n onto the stack.
+
+LoadF m e
+  Load the floating point number with mantissa m and decimal exponent e
+onto the stack.
+
+LoadJ
+  Load a JJ node onto the stack. A JJ node is an Rvalue representing a
+runtime environment consisting of C(current control), S(current stack)
+and E(current environment chain). LoadJ is only used in the
+compilation of Valof constructs and the JJ node creates becomes the
+Rvalue of a special variable *res*.
+
+Result
+  This is only used in the compilation of res statements to cause
+returns from a Valof blocks. The current value of *res* is obtained
+and the values of C, S and E that its JJ node contains are restored
+and the action of Return performed.
+
+Return
+  This returns from a function or block. The values C and E contained
+in the current dump (words 4 and 6 of the current stack) are restored.
+A new stack node is created and initialised with an idential copy of
+the one pointed to by the current dump. S is set to this new
+node. StackP is set to the value indicated in this new stack node.
+The contents of the top of the previous stack node (the return value)
+is placed on the top of the new stack.
+
+True, False, Nil, Dummy, Sys
+  Load the appropriate Rvalue onto the stack.
+
+FormLvalue
+  Pops the top value off the stack and push a new Lvalue pointing to
+this value onto the stack.
+
+FormRvalue
+  Pops the top value (assumed to be an Lvalue) off the stack and push
+the value it contains onto the stack.
+
+FormClosure Ln
+  Creat a Closure node and push it onto the stack. The closure node
+contains a pointer to the current environment and the address
+specified by Ln.
+
+Mult, Div, Power, Plus, Minus, Eq, Ne, Lt, Le, Gt, Ge, Logand, Logor
+  Replace the top two elements of the stack by the result of appling the
+specified operator to these two values.
+
+Tuple n
+  The top n elements of the stack are removed and combined into an
+n-tuple which is then pushed onto the stack. The previous top element
+becomes the first element of the tuple.
+
+Members n
+  The top element of the stack (assumed to be an n-tuple) is removed
+and replaced by the n elements of the tuple. The first member of the
+tuple becomes the top element of the stack. This operation is only
+used in the implementation of assignments and simultaneous
+definitions.
+
+Apply
+  This applies a function to its arguments. The top element of the
+stack is removed. 
+
+1) If it is a tuple, the next element of the stack is also removed,
+and the tuple applied to this element (assumed to be an integer) and
+the corresponding element of the tuple is pushed onto the stack.
+
+2) If it is a Sys node, the appropriate system function is called.
+
+3) If it is a closure node, the current value of C (the return
+address) is place in OldC, and C is set to the value specified in the
+closure node. Execution will now continues from C where a Save
+instruction will be found. This will complete the function call
+linkage and then fall through to execute the body of the function (or
+block).
+
+Save Lm
+  This is always the first instruction of a function or block. It
+creates a new stack node of size Lm+6 and makes this the current
+stack. The content of OldC (the return address) is placed in the 4th
+word of this stack and the old values of S and E placed in the 5th and
+6th words. The next to top element of the old stack is placed on the
+top of the new stack. (This element is Nil if a block is being
+entered; otherwise it is the argument of the function being
+applied). A new value of E is obtained from either the Closure node
+or, in the case of a block, from a temporary location. In the latter
+case, this value is identical to the former value of E.The old stack
+pointer (StackP) is saved in the 3rd word of the old stack node.
+
+Blocklink Ln
+  This is only used in the compilation of blocks and is designed to
+make it possible to used the same code for entering and leaving blocks
+as is used for entering and leaving functions.  A Nil node is placed
+on the top of the stack corresponding to the Closure node which is on
+the top of the stack when a Closure is applied. The location Ln is
+placed in OldC. This is the location of the first instruction
+following the block. The current value of E is placed in a tempory
+location for used by Save which always follows Blocklink.
+
+Reslink Ln
+  This sets up the link for entering a result block. An Lvalue is
+created with value Nil are its Rvalue and pushed onto the stack, then
+Blocklink Ln is executed.
+
+TestEmpty
+  This checks that the argument of a function with no formal
+parameters is indeed Nil.
+
+Declname x
+  This adds an Env node for name x with the Lvalue popped from the
+stack to the current environment.
+
+Declnames n x1,..., xn
+  This is equivalent to Declname x1;...; Deckname xn.
+
+Decllabel x Ln
+  This adds and Env node for name x with a new Lvalue containing a
+Label node representing the label whose address is Ln. The E field of
+the label will be filled in by a subsequent call of SetlabEs.
+
+SetlabEs n
+  The preceding n statements have all been Decclabel and this
+statement results in storing the current value of E in each of the
+Label nodes which have just been created.
+
+Jump Ln
+  C is set to the location specified by Ln.
+
+JumpF Ln
+  The top element of the stack is popped and, if it represents False,
+C is set the the location specified by Ln.
+
+Goto
+  The top element is popped and , if it is a label, C and E are set
+from the corresponding fields of the Label node, a new Stack node is
+created having appropriate size and contents and S set to this node.
+
+Lose1
+  The top element of the stack is popped.
+
+Update n
+
+LoadE
+
+LoadGuess
+
+Initname x
+
+Initnames n x1,..., xn
+
+RestoreE1
+
+MR
+29/10/2010

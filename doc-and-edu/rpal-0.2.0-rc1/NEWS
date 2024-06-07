@@ -1,0 +1,30 @@
+2006-10-04
+  Version 0.2.0-rc1.
+
+  Tuples are now evaluated right-to-left as they should be.  Also,
+  indentation in emacs now works properly.
+
+2006-10-01
+  Version 0.1.3.
+
+  An overdue release fixing two nasty bugs.  The exponentiation operator is
+  now fixed (thanks to F. Russell Tyndall for calling this to my attention),
+  and the REPL no longer exits when a runtime error occurs.
+
+2006-02-06
+  Version 0.1.2.
+
+  A --interactive option is now provided, which launches a read-eval-print
+  loop. 
+
+2006-02-01
+  Version 0.1.1.
+
+  Several portability issues have been resolved. rpal has now been successfully
+  tested on Linux, Solaris, and Cygwin.
+
+  An experimental emacs mode for RPAL, providing syntax highlighting and
+  indentation, is now included.
+
+2006-01-29
+  Initial release, 0.1.0.

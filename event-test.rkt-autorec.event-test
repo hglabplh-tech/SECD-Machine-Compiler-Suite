@@ -1,0 +1,42 @@
+#lang racket
+
+(require racket/async-channel)
+
+(define ch (make-channel)) 
+
+(define event-thread
+  (lambda ()
+    (println "thread alive")
+    (let ([msg (channel-get ch)])
+      (sync ch)
+      (println "before")
+    
+      (println "hello")
+     (evt-queue msg))))
+
+(define evt-queue
+  (lambda (message)
+    'dummy
+    (println message)
+    ))
+
+(define read-and-send
+  (lambda ()
+    (let ([result (read-line (current-input-port))])
+       (channel-put-evt ch result)
+      result)))
+
+  
+(define client
+  (lambda ()
+    (let the-loop ([input (read-and-send)])
+      (if (equal? input "quit")
+          'stop
+     (the-loop
+      (read-and-send))))))
+
+(thread event-thread)
+(client)
+
+
+

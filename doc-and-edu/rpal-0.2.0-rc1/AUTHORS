@@ -1,0 +1,15 @@
+Authors of the RPAL interpreter:
+
+Daniel Franke <dfranke@cise.ufl.edu>.
+Maintainer. Wrote the initial version in one continuous hacking run.
+
+Manuel Bermudez <manuel@cise.ufl.edu>.
+Daniel's research advisor. Wrote the syntax and operational semantics from 
+which the interpreter is derived.
+
+F. Russell Tyndall <russ@acceleration.net>.
+Thoroughly abused my code throughout a semester of CIS5555 and smoked out
+some bugs in the process.
+
+The RPAL language was designed at MIT in the early 70's by Wozencraft and
+Evans.

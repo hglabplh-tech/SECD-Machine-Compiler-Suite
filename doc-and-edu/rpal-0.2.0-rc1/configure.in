@@ -1,0 +1,25 @@
+AC_INIT(rpal, 0.2.0-rc1)
+AM_INIT_AUTOMAKE
+AC_CONFIG_FILES(Makefile tests/Makefile doc/Makefile m4/Makefile lib/Makefile)
+AC_PROG_CC
+AM_PROG_LEX
+AC_PROG_YACC
+AC_PROG_RANLIB
+AC_CHECK_HEADERS(getopt.h)
+AC_CHECK_HEADERS(readline/readline.h)
+AC_CHECK_FUNCS(getopt_long,,[AC_LIBOBJ(getopt) 
+                             AC_LIBOBJ(getopt1)])
+AM_PATH_LISPDIR
+GUILE_PROGS
+GUILE_FLAGS
+GUILE_SITE_DIR
+AC_CHECK_LIB(guile,scm_primitive_eval,,AC_DEFINE(DEPRECATED_EVAL))
+AC_CHECK_LIB(readline, readline)
+AC_PATH_PROGS(XSLTPROC,xsltproc)
+AM_CONDITIONAL(HAVE_XSLTPROC, test -n "$XSLTPROC")
+if test -z "$XSLTPROC"
+then
+AC_PATH_PROGS(SAXON,saxon)
+fi
+AM_CONDITIONAL(HAVE_SAXON, test -n "$SAXON")
+AC_OUTPUT

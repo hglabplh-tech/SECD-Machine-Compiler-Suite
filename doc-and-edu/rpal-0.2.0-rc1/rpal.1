@@ -1,0 +1,58 @@
+.\" ** You probably do not want to edit this file directly **
+.\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
+.\" Instead of manually editing it, you probably should edit the DocBook XML
+.\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
+.TH "RPAL" "1" "10/03/2006" "" ""
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.SH "NAME"
+rpal \- An interpreter for the Right\-reference Pedagogic Algorithmic Language.
+.SH "SYNOPSIS"
+.HP 5
+\fBrpal\fR [\fB\-asrihV\fR] [\fB\-\-ast\fR] [\fB\-\-st\fR] [\fB\-\-run\fR] [\fB\-\-interactive\fR] [\fB\-\-help\fR] [\fB\-\-version\fR] [file]
+.SH "DESCRIPTION"
+.PP
+\fBrpal\fR
+takes an RPAL program as input and evaluates it by translating it into Scheme. If no file is specified on the command line, stdin is used.
+.PP
+You can see
+\fBrpal\fR's intermediate output using the options
+\fB\-\-ast\fR
+and
+\fB\-\-st\fR, which generate the abstract syntax tree and the scheme tree respectively. Their short equivalents are
+\fB\-a\fR
+and
+\fB\-s\fR.
+.PP
+If one of the above is supplied,
+\fBrpal\fR
+will normally exit after displaying the requested tree, without evaluating the program. Use
+\fB\-\-run\fR
+or
+\fB\-r\fR
+to override this behavior.
+.PP
+\fB\-i\fR
+or
+\fB\-\-interactive\fR
+launches a read\-eval\-print loop. When running in interactive mode, three special commands are recognized.
+\fBast\fR
+and
+\fBst\fR
+toggle output of the abstract syntax tree and scheme tree.
+\fBquit\fR
+exits the interpreter.
+.SH "AUTHOR"
+.PP
+Written by Daniel Franke with contributions from Manuel Bermudez.
+.SH "BUGS"
+.PP
+Probably infinite. Report them to
+<dfranke@cise.ufl.edu>.
+.SH "COPYRIGHT"
+.PP
+Copyright (C) 2006 Daniel Franke.
+.PP
+This is free software; see the source for copying conditions. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.

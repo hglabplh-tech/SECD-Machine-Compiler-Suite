@@ -1,0 +1,9 @@
+let Solve(n) = Rsolve n 1 2 where
+  rec Rsolve = fn n s d .
+  n eq 1 
+  -> Conc (ItoS s) (Conc '->' (Conc (ItoS d) ' ')) 
+  | Conc (Rsolve (n-1) s (6-s-d))
+  (Conc (Rsolve 1 s d)
+   (Rsolve (n-1) (6-s-d) d))
+in
+Print(Conc (Solve 5) '\n')

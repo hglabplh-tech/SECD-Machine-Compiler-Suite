@@ -1,0 +1,22 @@
+This PAL distribution provides some of the documents in PDF form
+relating to the PAL language developed at MIT between 1967 and 1969.
+See pal/docs/pal-ref-man.pdf (in this distribution) for details.
+
+The PAL compiler was written in BCPL but has been lost. However, I
+plan to resurrect it to run under Cintcode BCPL using scraps of
+working documentation I still have. It will consist of a simple
+compiler and interpreter derived from the VSPL system. The interpreter
+will follow the structure of the CSED blackboard machine. No attemp
+will be made to make this implementation efficient.
+
+The directory pal/docs contains various pdf documents.
+
+pal/pal.b will eventually be the Pal compiler and interpreter.
+Initialially this is just the vspl compiler and interpreter.
+
+I will be away fpr much of the next three months and so progress
+will be slow.
+
+Martin Richards
+9 June 2010
+

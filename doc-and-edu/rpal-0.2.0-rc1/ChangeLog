@@ -1,0 +1,65 @@
+2006-10-03  Daniel Franke <dfranke@icse.ufl.edu>
+  
+  * (rpal.y): Fixed preprocessor logic inversion in readline inclusion.
+  * (rpal.y): Load syncase.
+  * (rpal.scm): Evaluate tau right-to-left.
+  * (rpal-mode.el): Indentation actually works now.
+  * Version 0.2.0-rc1.
+	
+2006-10-01  Daniel Franke <dfranke@cise.ufl.edu>
+
+  * Fixed bug with the exponentiation operator.
+  * Added F. Russell Tyndall to the authors list for having caught this.
+  * Version 0.1.3.
+
+2006-02-09  Daniel Franke <dfranke@cise.ufl.edu>
+  
+  * In interactive mode, don't exit the program on runtime errors.
+
+2006-02-06  Daniel Franke <dfranke@cise.ufl.edu>
+
+  * (rpal.y): Added a REPL.
+  * (rpal.1.xml): Documented the new -i option.
+  * (README): Changed the bug report email address to the new rpal-devel
+    list.
+  * Version 0.1.2.
+
+2006-02-04  Daniel Franke <dfranke@cise.ufl.edu>
+
+  * (README): Change homepage address to sourceforge.
+  * (NEWS): s/2005/2006/.  D'oh.
+
+2006-02-01  Daniel Franke <dfranke@cise.ufl.edu>
+  
+  * Version 0.1.1.
+
+2006-01-31  Daniel Franke <dfranke@cise.ufl.edu>
+  
+  * (rpal-mode.el): Improved indentation algorithm.
+  * (Makefile.am): Changed lisp_LISP to lisp_DATA.
+  
+2006-01-30  Daniel Franke <dfranke@cise.ufl.edu>
+  
+  * Added getopt_long() replacement from libiberty.
+  * (rpal.scm): Added proper handling for empty strings to Stem/Stern.
+  * (README): Fleshed out the README file.
+  * Changed RPAL's acronym: s/Rvalue/Right-reference/.
+  * Support saxon as well as xsltproc for generating manpage.
+  * (configure.in): Updated deprecated AC_OUTPUT usage.
+  * (bootstrap): Added -i and -Wall to autoreconf command line.
+  * (rpal.y): Fixed a silly redundancy in locating rpal.scm. 
+  * (rpal-mode.el): Added an emacs mode for RPAL files.
+  * (tests/bottles.rpal): Added test case (authored by MB).
+  * (rpal.scm): Renamed Ystar to Y* to keep namespace clean.
+  * (README): Added note regarding manpage generation.
+
+2006-01-29  Daniel Franke <dfranke@cise.ufl.edu>
+  
+  * Moved m4 scripts to separate subdirectory.
+  * Added bootstrap script.
+  * Automated production of rpal.1 from rpal.1.xml.
+  * Added hack to support deprecated guile 1.4 eval syntax.
+
+2006-01-29  Daniel Franke <dfranke@cise.ufl.edu>
+  
+  * Initial release, 0.1.0.

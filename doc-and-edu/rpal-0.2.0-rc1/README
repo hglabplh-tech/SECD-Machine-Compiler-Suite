@@ -1,0 +1,45 @@
+This is rpal, an interpreter for the Right-reference Pedagogic Algorithmic
+Language. This interpreter is written and maintained by Daniel Franke. It
+shares no code with (but will hopefully replace, eventually) the interpreter
+by the same name authored by Prof. Manuel Bermudez.
+
+REQUIREMENTS
+	rpal aims to be portable to any POSIX-like system, including Cygwin
+	and Darwin/OS X.
+
+	rpal requires GNU Guile. It is actively developed against the 1.6 
+	version series, but ought to also work with 1.4 and possibly earlier
+	versions.  Guile is available from http://www.gnu.org/software/guile.
+
+	To compile rpal, you will need lex and yacc in addition to the
+	standard UNIX tool-chain. Most any combination of lex/flex and
+	yacc/byacc/bison should be adequate.
+
+	rpal's manpage is generated from Docbook. In the distribution, the
+	manpage comes pre-generated, but if you want to make changes to it
+	you will need an XSLT processor.  Currently the build system can
+	automatically detect and use either xsltproc or saxon.
+
+	See the file INSTALL for building and installation instructions.
+
+OBTAINING RPAL
+	The latest version of rpal is available from http://rpal.sf.net.
+
+LANGUAGE DOCUMENTATION
+	The closest thing that RPAL has to documentation is the transduction
+	grammar and operational semantics provided by Prof. Bermudez. These
+	are available in PDF form in the doc/ directory of this distribution.
+
+CONTRIBUTING
+	Any contributions to rpal's development are welcome and appreciated.
+	You can particularly help us out by submitting your RPAL programs for
+	use as test cases.
+
+LICENSE
+	rpal is Copyright (c) 2006 Daniel Franke.
+
+	rpal is Free software, licensed under the GNU General Public License.
+	See the file COPYING for details.
+
+BUGS
+	Please send all bug reports to rpal-devel@lists.sourceforge.net.

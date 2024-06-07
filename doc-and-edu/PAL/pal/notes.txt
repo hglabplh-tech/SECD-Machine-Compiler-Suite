@@ -1,0 +1,496 @@
+############## UNDER DEVELOPMENT ########################
+
+PAL
+
+This is a re-implementation of PAL in Cintcode BCPL. PAL was designed
+at MIT between 1967 and 1969 and was used in the course 6.231 taught
+to sophomores at that time. It was an early functional programming
+language being essentially a sugared lamda calculus related to Peter
+Landin's ISWIM languge.
+
+An example PAL program (test.pal) is the following:
+
+let a, k, d = -1, nil, nil
+in
+let f x =
+  l: a := a+1;
+     Print a;
+  m: x < 0 -> (k := d) !
+     x = 0 -> (k := l) !
+     (x := x - 3)
+in
+d := n; f a; goto k;
+n: a
+
+
+The program can be compiled and run (under the BCPL Cintcode System)
+by the command:
+
+pal test.pal
+
+To aid understanding of how the compiler and interpreter works, it can
+trace the output of the lexical analyser, print the parse tree, output
+a mnemonic form of the compiled code and trace the execution of the
+interpreter. These are are illustrated by the following (running in
+directory VSPL/bcpl under BCPL Cintcode):
+
+0> type hello.pal
+let hello() =
+  print 'Hello world*n';
+  0
+in
+hello()
+0.000> pal -l hello.pal
+
+PAL (14 June 2010)
+token =  46 Let
+token =   3 Name      hello
+token =  60 Lparen
+token =  61 Rparen
+token =  26 Eq
+token =   3 Name      Print
+token =   4 String    'Hello world*n'
+token =  38 Semicolon
+token =   1 Int       0
+token =  50 In
+token =   3 Name      hello
+token =  60 Lparen
+token =  61 Rparen
+token =  62 Eof
+0.000> pal -l hello.pal
+
+PAL (14 June 2010)
+token =  46 Let
+token =   3 Name      hello
+token =  60 Lparen
+token =  61 Rparen
+token =  26 Eq
+token =   3 Name      Print
+token =   4 String    'Hello world*n'
+token =  38 Semicolon
+token =   1 Int       0
+token =  50 In
+token =   3 Name      hello
+token =  60 Lparen
+token =  61 Rparen
+token =  62 Eof
+0.010> 
+0.000> pal -p -c -t hello.pal
+
+PAL (11 July 2010)
+
+Parse Tree
+
+Let  -- line 1
+*-Valdef  -- line 1
+! *-Name hello
+! *-Lambda  -- line 1
+!   *-Nil
+!   *-Seq  -- line 1
+!     *-Apply  -- line 2
+!     ! *-Name Print
+!     ! *-String 'Hello world*n'
+!     *-Int 0
+*-Apply  -- line 5
+  *-Name hello
+  *-Nil
+
+Compiled code:
+
+Error near line 17:   Compiler error in Load, op=Lambda
+LoadN 0
+Declname hello
+LoadR hello
+Nil
+Apply
+Halt
+
+Program size: 9 data size: 0
+
+pal failed returncode 20
+0.000> 
+
+Lexical Analyser
+
+Comments are introduced by // and continue to the end of the line.
+
+The lexical tokens are:
+
+Name       eg  x v1  Tax_rate   -- The underscore is an extension
+True, False, Nil, Dummy, Jj
+Int        eg 123 
+Real       eg 123.456 1.0 0.1   -- 8 significant decimal digits
+String     eg 'Hello*n'         -- No character constants
+Val
+
+Lambda
+Unshare, Aug, Lambda
+Exp, Mul, Div, Add, Sub, Neg
+Eq, Ne, Lt, Gt, Le, Ge,
+Not
+Logand, Logor
+Cond, Pling
+Assign
+Seq
+Goto
+If, Do
+test, Then, Else
+Val, Res
+
+Lparen, Rparen
+Comma, Semicolon, Colon, Dot, Percent
+Sys
+Def, Let, And, In, Within, Where
+Sys, Eof
+
+
+Syntax
+
+This version of PAL is based on Appendix 2.1 (dated 17 Feb 1968)
+augmented by ideas from in RNPAL (Revolutionary New) PAL Syntax dated
+4 June 1968 by Richards and Proposed PAL Syntax III' dated 6 June 1968
+by Frank DeRemer.
+
+The PAL syntax uses the following syntactic categories.
+
+P       Program
+D0      Definitions possibly qualified by where clauses
+D1      Definitions possibly including the within operator
+D2      Definitions possibly including the and operator
+D3      Basic definitions
+
+C0      Commands possibly qualified by where clauses
+C1      Sequences
+C2      Basic commands including labels, if and test commands,
+        goto, res, bracketed commands and expressions
+
+E0      Expressions possibly qualified by where clauses
+E1      Tuples
+E2      Conditional expressions
+E3      aug expressions
+E4      logor expressions
+E5      logand expressions
+E6      not expressions
+E7      relational expressions
+E8      + and - expressions
+E9      * and / expressions
+E10     ** expressions
+E11     Basic expressions, namely
+        let, lambda, goto, not, $, val, res,
+        name, int, real, string,
+        jj, true, false, nil, dummy, sys
+        and expresions in parentheses
+
+N       Names
+
+BV      Bound variable lists
+
+The syntax is as follows:
+
+Note that {...} denotes zero or more repetitions of the enclosed items
+
+P   -> def D0 { def D0 } in C0 eof
+       C0
+
+D0  -> D0 where D1
+       D1
+
+D1  -> D2 within D1
+       D2
+
+D2  -> D3 { and D3 }           -- Simultaneous definition
+
+D3  -> N { , N } = E1          -- Value definition
+       N { BV } = C1           -- Curried function definition
+       rec D3                  -- Recursive definition
+       ( D0 )
+
+BV  -> N                       -- A single name
+       ( )
+       ( N { , N } )           -- One or more names
+
+C0  -> C1 { where D1 }
+
+C1  -> C2 ; C1                 -- Command sequence
+       C2 
+
+C2  -> let D0 in C1
+       res E1                  -- return from a 'val' expression
+       goto E1
+       ( C0 )
+       if E1 do C2
+       test E1 then C2 else C2
+       E1 := E1                -- assignment
+       N: C2                   -- Labelled expression
+       E1                      -- A command can be an expression
+
+E0  -> E0 where D1
+       E1
+
+E1  -> E2 {, E2 }
+
+E2  -> E3 -> E2 ! E2
+       E3
+
+E3  -> E3 % N E4
+       E4
+
+E4  -> E4 aug E5
+       E5
+
+E5  -> E5 | E6
+       E6
+
+E6  -> E6 & E7
+       E7
+
+E7  -> E7 = E8   -- Beware:       1<=x<=10
+       E7 < E8   -- is parsed as: (1<=x)<=10
+       E7 > E8
+       E7 ~= E8
+       E7 <= E8
+       E7 >= E8
+       E8
+
+E8  -> E8 + E9
+       E8 - E9
+       E9
+
+E9  -> E9 * E10
+       E9 / E10
+       E10
+
+E10 -> E10 ** E11
+       E11
+
+E11 -> E11 E12                -- function call
+       E12
+
+E12 -> ()                     -- Synonym for nil
+       ( E )                  -- used for grouping
+       N
+       <integer constant>
+       <real constant>
+       true
+       false
+       nil
+       jj                     -- Landin's J operator
+       dummy
+       sys E12
+       $ E12
+       + E9
+       - E9
+       not E7
+       ll BV { BV } . C1      -- A (curried) lambda expression
+       val C1                 -- Execute C1 until 'res E' encountered
+
+'where' qualifies the longest definition, command or
+expression on its left.
+Comments extend from // to the end of the line.
+
+
+Abstract Syntax Tree
+
+In what follows, ln denotes a line number.
+
+N  -> [Name, -, chars]                       -- Name
+
+NL -> N | [Comma, N, NL]                     -- Name list
+
+EL -> E | [Comma, E, EL]                     -- Expression list
+
+BV -> [Nil]
+      N
+      [Tuple, N, NL, ln]
+
+E  -> N                                      -- Expression
+      [Int, value]                           -- eg 123
+      [Real, mantissa, exponent]             -- eg 123.456
+      [String, chars]                        -- eg 'Hello'
+      [Tuple, E, EL, ln]                     -- eg (nil, () aug 1, (1,2),3)
+      [Lambda, BV, C, ln]                    -- eg ll x . x+1
+      [True]
+      [False]
+      [Nil]
+      [Dummy]
+      [Jj]
+      [Sys, E, ln]
+      [Apply, E, E, ln]
+      [Unshare, E, ln]                        -- eg $ 1
+      [Aug, E, E, ln]                         -- eg (1,2,3) aug 4
+      [Neg, E, ln]
+      [Exp, E, E, ln]
+      [Mul, E, E, ln]
+      [Div, E, E, ln]
+      [Add, E, E, ln]
+      [Sub, E, E, ln]
+      [Eq, E, E, ln]
+      [Ne, E, E, ln]
+      [Le, E, E, ln]
+      [Ge, E, E, ln]
+      [Lt, E, E, ln]
+      [Gt, E, E, ln]
+      [Logand, E, E, ln]
+      [logor, E, E, ln]
+      [Percent, E, N, E, ln]
+      [Cond, E, E, E, ln]
+      [Val, E, ln]
+      [Where, D, E, ln]
+
+C  -> [Res, E, ln]                            -- Commands
+      [Assign, E, E, ln]                      -- eg x, y := y, x
+      [If, E, C, ln]
+      [Test, E, C, C, ln]
+      [Let, D, C, ln]
+      [Where, C, D, ln]
+      [Seq, C, C, ln]
+      [Lab, N, C, ln]
+
+D  -> [Valdef, NL, E, ln]                       -- Declaration 
+      [And, D, D, ln]
+      [Within, D, D, ln]
+      [Where, D, D, ln]
+      [rec, D, ln]
+
+P  -> [Def, D, P]                               -- Program
+      C
+
+
+Note that
+
+let f x = x+1 in ...
+
+is treated  as
+
+let f = ll x . x+1 in ...
+
+###### The rest requires major editing ###########################
+
+Interpretive Code
+
+Instructions are compiled into a code vector, and static data into
+a data vector. The PAL abstract machine has the following registers:
+
+pc    -- Pointer to the next instruction in the code vector to obey.
+stk   -- points to the top stack item -> [link, -, value]
+         arguments and local belonging to the current function.
+env   -- The current environment chain -> [link, -, name, value]
+dump  -- Points to the current dump [link, -, pc, stk, env]
+count -- A counter, decremented every time an instruction is obeyed.
+
+All runtime values are held in nodes of the same size (probably 5 words)
+for ease of the mark and sweep garbage collector. If n points to a
+node then
+
+h1!n is the type of node or a link
+d2!n is a mark used by the garbage collector, =1 if in use, =0 otherwise
+the other fields may or may not be pointers depending
+on the type of the node.
+
+The possible values are as follows:
+
+[Int, -, k]
+[Real, -, mantissa, exponent]
+[String, -, <characters>]     ?????????????????????????
+[True, -]
+[False, -]
+[Nil, -]
+[Dummy, -]
+[Guess, -]
+[Jj, -, dump]
+[Closure, -, Ln, env]
+[Label, -, Ln, env]
+[Tuple, -, value, <valuelist>]
+[Env, -, env]            -- Used by LoadE and RestoreE
+
+<valuelist> is a value
+               or [Comma, -, value, <valuelist>]
+
+
+Program directives and instructions
+
+LoadN k      -- push([Int, k])         load an int constant
+LoadF k exp  -- push([Real, k, exp]    load a real constant
+LoadL name   -- push(C(lookup(name)))  load the Lvalue of name
+LoadR name   -- push(lookup(name))     load the Rvalue of name
+LoadS str    -- push([String, str])    load a string
+LoadJ        -- push([Jj, dump])
+LoadGuess    -- push([Guess])
+True         -- push([True])
+False        -- push([False])
+Nil          -- push([Nil])
+Dummy        -- push([Dummy])
+
+Formlvalue   -- perform pushrvalue then push([Lvalue,pop()])
+Formrvalue   -- if top of stack is ab Lvalue: push(C(pop())
+Formclosure Ln -- push([Closure, Ln, env])
+
+Aug          -- push(aug(pop(),pop()))        aug
+Neg          -- push(neg(pop()))              monadic minus
+Not          -- push(not(pop()))              monadic not
+
+Tuple n    -- Form and n-tuple out of the top n stack elements
+Members n  -- Break the n-tuple on the top of the stack into it n elements
+
+Exp      -- s!0 := (s!0) ! (s!1)    subscription
+Mul      -- s!0 :=  s!0  *  s!1     integer multiply
+Div      -- s!0 :=  s!0  /  s!1     integer division
+Add      -- s!0 :=  s!0  +  s!1     add
+Sub      -- s!0 :=  s!0  -  s!1     subtract
+Eq       -- s!0 :=  s!0  =  s!1     equal
+Ne       -- s!0 :=  s!0 ~=  s!1     not equal
+Le       -- s!0 :=  s!0 <=  s!1     less or equal
+Ge       -- s!0 :=  s!0 >=  s!1     greater or equal
+Lt       -- s!0 :=  s!0  <  s!1     less than
+Gt       -- s!0 :=  s!0  >  s!1     greater than
+Logand   -- s!0 :=  s!0  &  s!1     bitwise and
+Logor    -- s!0 :=  s!0  |  s!1     bitwise or
+
+Lab Li    -- Set label Li to the address of the next instruction
+JumpT Li  -- IF     pop() GOTO Li             jump if true
+JumpF Li  -- UNLESS pop() GOTO Li             jump if false
+Jump      -- GOTO Li                          unconditional jump
+Goto      -- goto(pop())                      computed jump 
+
+Apply          -- Enter function pop()
+Return         -- Return from current function, ie restore previous
+                  pc,stk, env and dump from current dump and push
+                  the return value.
+Result
+Return          -- Return from a function
+Blocklink Ln
+Reslink Ln
+Save Ln
+Testempty       -- Check that pop() is [Nil]
+Declname x      -- env := [Env, x, pop(), env]
+Declbalel x Ln  -- Declare a label, ie env := [Env, x, [Label,Ln,-], env]
+                -- the dash will be an environment filled in later
+                -- by SetlabEs
+SetlabEs n      -- Set the environment fields to env of the n labels
+                -- just declared
+Lose1           -- Throw away the top stack element
+Update n        -- Perform a simultaneous assignment
+LoadE           -- push(env)
+Initname x
+Initnames n x1,..,xn
+RestoreE        -- env := pop()
+
+
+The following PAL sys calls are defined:
+
+sys(0, code)   -- Return from the interpreter with result code
+sys(1, b)      -- Start/stop tracing the interpreter execution depending
+                  on whether b is TRUE or FALSE
+sys(2, k)      -- Set the count register to k, returning the previous
+                  value
++ many more
+
+PAL command Options
+
+  -o file    redirect output to a file
+  -l         trace the lexical analyser
+  -p         output the abstract syntax tree
+  -c         output the interpretive code
+  -t         trace interpreter execution
+
+(c) Martin Richards   14 Oct 2010
