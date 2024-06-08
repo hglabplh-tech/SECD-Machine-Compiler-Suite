@@ -5,7 +5,8 @@
          deinprogramm/sdp/record
          deinprogramm/signature/signature
          deinprogramm/signature/signature-german
-         deinprogramm/signature/signature-syntax)
+         deinprogramm/signature/signature-syntax
+         "../machine/secd-vm-defs.rkt")
 
 (define thread-num 0)
 
@@ -14,9 +15,21 @@
 
 ;; the state change mnemnonics
 
-(define up-call-new-thread-cmd (gensym "up-call-new-thread"))
+(define set-new-thread-cmd (gensym "new-thread-cmd"))
+(define set-start-thread-cmd (gensym "start-thread-cmd"))
+(define set-restore-thread-cmd (gensym "restore-thread-cmd"))
+(define set-store-thread-cmd (gensym "store-thread-cmd"))
 
+(define thread-cmd?
+  (lambda (cmd)
+    (and symbol? (or
+                  (equal? cmd set-new-thread-cmd)
+                  (equal? cmd set-start-thread-cmd)
+                  (equal? cmd set-restore-thread-cmd)
+                  (equal? cmd set-store-thread-cmd)                 
+                  )))) 
 
+(define thread-cmd-sig (signature (predicate thread-cmd?))) ;;
 ;; the state of a running/starting.... thread
 
 (define initializing (gensym "initializing"))
@@ -176,7 +189,7 @@
             [real-processor
              (lambda (cmd  args)
                (cond
-                 ((equal? cmd start-thread)
+                 ((equal? cmd set-start-thread-cmd)
                   (let-values ([[thread-inst] args]) 
                   (ring-buffer-push! act-thread-space
                                      (thread-block-change-state thread-inst ready)) ;; start the thread as being ready to run

@@ -5,5 +5,7 @@
          deinprogramm/signature/signature
          deinprogramm/signature/signature-german
          deinprogramm/signature/signature-syntax
-         "../secd-vm-defs.rkt")
+         "../machine/secd-vm-defs.rkt")
+
+
 
