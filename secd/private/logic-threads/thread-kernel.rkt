@@ -6,6 +6,7 @@
          deinprogramm/signature/signature
          deinprogramm/signature/signature-german
          deinprogramm/signature/signature-syntax
+         "../transactions/trans-mem-defs.rkt"
          "../machine/secd-vm-defs.rkt")
 
 (define thread-num 0)
@@ -92,10 +93,10 @@
 (define-record threadpool
   make-threadpool threadpool?
   
-   (threadpool-thash hasheq-sig)
-   (threadpool-thinking-trans-memory transact-proc-sig) ;; change to real sig CICS-like transactional threads
-   (threadpool-commarea commarea-sig) ;; like in CICS ... smile
-   )
+  (threadpool-thash hasheq-sig)
+  (threadpool-thinking-trans-memory transact-proc-sig) ;; change to real sig CICS-like transactional threads
+  (threadpool-commarea commarea-sig) ;; like in CICS ... smile
+  )
 
 
 (define the-pool (make-threadpool  (make-hasheq) (lambda (one two)
@@ -144,7 +145,8 @@
   (thread-block-state thread-state-sig)
   (thread-block-state-proc state-fun-sig)
   (thread-block-runnable proc-with-arity-sig)
-  (thread-block-local-space loc-space-sig))
+  (thread-block-local-space loc-space-sig)
+  (thread-block-trans-conn trans-mem-block-sig))
 
 (define new-fresh-thread
   (lambda (name runnable)
@@ -160,12 +162,12 @@
 
 (define thread-block-change-state
   (lambda (thread-inst state) 
-(make-thread-block (thread-block-name thread-inst)
-                        (thread-block-tid thread-inst)
-                        state
-                        (thread-block-state-proc thread-inst)
-                        (thread-block-runnable thread-inst)
-                        (thread-block-local-space thread-inst))))
+    (make-thread-block (thread-block-name thread-inst)
+                       (thread-block-tid thread-inst)
+                       state
+                       (thread-block-state-proc thread-inst)
+                       (thread-block-runnable thread-inst)
+                       (thread-block-local-space thread-inst))))
 
 
 (define thread-block-sig (signature (predicate thread-block?)))
@@ -175,26 +177,30 @@
   (lambda (thread-inst)
     (let ([started-inst (thread-block-change-state thread-inst starting)])      
                         
-    )))
+      )))
     
 
 
 
 
 (define kernel
-    (lambda (ring-buff)
-      (let ([act-thread-space ring-buff]
-            [sched-preemtive (make-sched-meth-preempt)]
-            [sched-non-preemptive (make-sched-meth-non-preempt)]
-            [real-processor
-             (lambda (cmd  args)
-               (cond
-                 ((equal? cmd set-start-thread-cmd)
-                  (let-values ([[thread-inst] args]) 
+  (lambda (ring-buff)
+    (let ([act-thread-space ring-buff]
+          [sched-preemtive (make-sched-meth-preempt)]
+          [sched-non-preemptive (make-sched-meth-non-preempt)]
+          [real-processor
+           (lambda (cmd  args)
+             (cond
+               ((equal? cmd set-start-thread-cmd)
+                (let-values ([[thread-inst] args]) 
                   (ring-buffer-push! act-thread-space
-                                     (thread-block-change-state thread-inst ready)) ;; start the thread as being ready to run
-           
-            ))))])
-        real-processor
+                                     (thread-block-change-state thread-inst ready))
+                  ))
+               ((equal? cmd set-thread-restore-cmd)
+                #t)
+               ))])
         
-        )))
+
+      real-processor
+        
+      )))

@@ -1,12 +1,12 @@
 #lang racket
 (require rnrs/io/ports-6
-         "secd-vm-defs.rkt"
-         "debug-out.rkt"
-         "secd-vm-proc.rkt"
-         "secd-compiler.rkt"
-         "secd-dbg-print-it.rkt"
-         "stack.rkt"
-         "operations.rkt")
+         "../machine/secd-vm-defs.rkt"
+         "../machine/debug-out.rkt"
+         "../machine/secd-vm-proc.rkt"
+         "../machine/secd-compiler.rkt"
+         "../machine/secd-dbg-print-it.rkt"
+         "../machine/stack.rkt"
+         "../machine/operations.rkt")
 
 (provide
  debug-main
